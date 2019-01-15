@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
-import { View, Text, StyleSheet, TextInput, Button } from 'react-native';
+import React, { Component } from "react";
+import { View, Text, StyleSheet, TextInput, Button } from "react-native";
 import firebase from "../firebaseConnection";
-export class CadastroScreen extends Component {
+
+export class RegisterScreen extends Component {
 
   static navigationOptions = {
-    title: 'Cadastro',
+    title: "Cadastro",
     headerStyle: {
       backgroundColor: "#FFFF00"
     },
@@ -15,31 +16,32 @@ export class CadastroScreen extends Component {
     super(props)
     this.state = {
       email: "",
-      senha: "",
+      password: "",
     }
 
     firebase.auth().signOut();
   }
 
   addUser = () => {
-    const { email, senha } = this.state;
-    if (email && senha) {
+    const { email, password } = this.state;
+    if (email && password) {
 
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-          firebase.database().ref('usuarios').child(user.uid).set({
+          firebase.database().ref("usuarios").child(user.uid).set({
             saldo: 0,
           });
-          this.props.navigation.navigate("Interno");
+          this.props.navigation.navigate("HistoricList");
         }
       });
 
       firebase.auth().createUserWithEmailAndPassword(
         email,
-        senha
+        password
       ).catch((error) => {
         alert(error.code);
-      })
+      });
+
     }
   }
 
@@ -49,13 +51,12 @@ export class CadastroScreen extends Component {
         <Text>Email</Text>
         <TextInput value={this.state.email} style={styles.input} onChangeText={(email) => this.setState({ email })} />
         <Text>Senha</Text>
-        <TextInput secureTextEntry={true} value={this.state.senha} style={styles.input} onChangeText={(senha) => this.setState({ senha })} />
+        <TextInput secureTextEntry={true} value={this.state.password} style={styles.input} onChangeText={(password) => this.setState({ password })} />
         <Button title="Cadastrar" onPress={this.addUser} />
       </View>
     );
   }
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -65,6 +66,6 @@ const styles = StyleSheet.create({
     height: 40,
     backgroundColor: "#CCCCCC",
     padding: 5,
-    marginBottom: 10
-  }
-})
+    marginBottom: 10,
+  },
+});

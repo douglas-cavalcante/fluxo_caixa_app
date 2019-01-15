@@ -1,40 +1,53 @@
 import React, { Component } from "react"
 import { View, Text, StyleSheet, FlatList, Button } from "react-native";
-import { HistoricoItem } from "./HistoricoItem";
+import HistoricoItem from "./HistoricItem";
 import firebase from "../firebaseConnection";
 
-export class InternoScreen extends Component {
+export class HistoricListScreen extends Component {
 
   static navigationOptions = {
     header: null,
   };
 
   constructor(props) {
+
     super(props);
     this.state = {
       saldo: 0,
       historico: [],
     };
+
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        firebase.database().ref("usuarios").child(user.uid).on('value', (snapshot) => {
-          const saldo = snapshot.val().saldo;
+
+        firebase.database().ref("usuarios").child(user.uid).on("value", (snapshot) => {
+          const saldo = parseFloat(snapshot.val().saldo);
           this.setState({ saldo });
-        })
+        });
+
+        //Verificando histórico
+        firebase.database().ref("historico").child(user.uid).on("value", (snapshot) => {
+          let state = this.state;
+          state.historico = [];
+          snapshot.forEach((childItem) => {
+            state.historico.push({
+              key: childItem.key,
+              type: childItem.val().type,
+              value: parseFloat(childItem.val().valor),
+            });
+          });
+          this.setState(state);
+        });
+
       } else {
         this.props.navigation.navigate("Home");
       }
     });
   }
 
-  addReceita = () => {
-
+  redirect = (screen) => {
+    this.props.navigation.navigate(screen);
   }
-
-  addDespesa = () => {
-
-  }
-
 
   logout = () => {
     firebase.auth().signOut();
@@ -44,23 +57,23 @@ export class InternoScreen extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.saldoArea}>
-          <Text style={styles.saldo}>Saldo: R$ {this.state.saldo}</Text>
+          <Text style={styles.saldo}>Saldo: R$ {this.state.saldo.toFixed(2)}</Text>
         </View>
         <FlatList
           style={styles.historico}
           data={this.state.historico}
-          renderItem={(item) => <HistoricoItem data={item} />}
+          renderItem={({ item }) => <HistoricoItem data={item} />}
+          keyExtractor={(item, _index) => item.key}
         />
         <View style={styles.botaoArea}>
-          <Button title={"+ Receita"} onPress={this.addReceita} />
-          <Button title={"+ Despesa"} onPress={this.addDespesa} />
+          <Button title={"+ Receita"} onPress={() => this.redirect("RevenueForm")} />
+          <Button title={"+ Despesa"} onPress={() => this.redirect("AddExpense")} />
           <Button title={"Logout"} onPress={this.logout} />
         </View>
       </View>
     );
   }
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -83,6 +96,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     paddingTop: 10,
     paddingBottom: 10,
-    backgroundColor: "#DDDDDD"
+    backgroundColor: "#DDDDDD",
   }
 });

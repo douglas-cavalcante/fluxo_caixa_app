@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { ImageBackground, View, Text, StyleSheet, TouchableHighlight } from "react-native";
+import firebase from '../firebaseConnection';
 
 export class HomeScreen extends Component {
 
@@ -7,8 +8,26 @@ export class HomeScreen extends Component {
     header: null,
   };
 
-  handleOnPress = (screen) => {
+  constructor(props) {
+    super(props);
+    this.state = {
+      total: 0,
+    };
+
+  }
+
+  handleOnPress = (screen) => () => {
     this.props.navigation.navigate(screen);
+  }
+
+  componentDidMount(){
+    firebase.database().ref("usuarios").on("value", (snapshot) => {
+      let total = 0;
+      snapshot.forEach((item) => {
+        total = total +  item.val().saldo;
+      });
+      this.setState({ total });
+    });
   }
 
   render() {
@@ -17,13 +36,14 @@ export class HomeScreen extends Component {
         <View style={styles.container}>
           <Text style={styles.title}>Fluxo de caixa</Text>
           <View style={styles.buttonArea} >
-            <TouchableHighlight underlayColor="white" style={styles.button} onPress={() => this.handleOnPress("Cadastro")}>
+            <TouchableHighlight underlayColor="white" style={styles.button} onPress={this.handleOnPress("Register")}>
               <Text style={styles.text}>Cadastrar</Text>
             </TouchableHighlight>
-            <TouchableHighlight underlayColor="white" style={styles.button} onPress={() => this.handleOnPress("Login")}>
+            <TouchableHighlight underlayColor="white" style={styles.button} onPress={this.handleOnPress("Login")}>
               <Text style={styles.text}>Login</Text>
             </TouchableHighlight>
           </View>
+          <Text>Administramos: R$ {this.state.total.toFixed(2)}</Text>
         </View>
       </ImageBackground >
     );

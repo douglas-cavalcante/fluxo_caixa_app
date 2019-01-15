@@ -28,7 +28,7 @@ export class LoginScreen extends Component {
     if (email && senha) {
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-          this.props.navigation.navigate("Interno");
+          this.props.navigation.navigate("HistoricList");
         }
       });
 
@@ -37,9 +37,9 @@ export class LoginScreen extends Component {
         senha
       ).catch((error) => {
         alert(error.code);
-      })
+      });
     } else {
-      alert("Digite todos os dados");
+      alert("Digite todos os dados !");
     }
   }
 
@@ -66,4 +66,4 @@ const styles = StyleSheet.create({
     padding: 5,
     marginBottom: 10
   }
-})
+});

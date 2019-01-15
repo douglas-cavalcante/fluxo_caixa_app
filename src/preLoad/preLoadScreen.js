@@ -12,7 +12,7 @@ export class PreLoadScreen extends Component {
     super(props);
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        this.props.navigation.navigate("Interno");
+        this.props.navigation.navigate("HistoricList");
       } else {
         this.props.navigation.navigate("Home");
       }

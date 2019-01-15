@@ -1,29 +1,35 @@
 import { createStackNavigator, createAppContainer } from "react-navigation";
 import { HomeScreen } from "./src/home/HomeScreen";
-import { CadastroScreen } from "./src/cadastro/CadastroScreen";
+import { RegisterScreen } from "./src/register/RegisterScreen";
 import { LoginScreen } from "./src/login/LoginScreen";
-import { InternoScreen } from "./src/interno/InternoScreen";
+import { HistoricListScreen } from "./src/interno/HistoricListScreen";
 import { PreLoadScreen } from "./src/preLoad/preLoadScreen";
-
+import { RevenueFormScreen } from "./src/interno/RevenueFormScreen";
+import { AddExpenseScreen } from "./src/interno/AddExpenseScreen";
 
 const AppNavigator = createStackNavigator({
-  Preload:{
+  Preload: {
     screen: PreLoadScreen,
   },
-  Interno: {
-    screen: InternoScreen
+  HistoricList: {
+    screen: HistoricListScreen
   },
   Home: {
     screen: HomeScreen,
   },
-  Cadastro: {
-    screen: CadastroScreen,
+  Register: {
+    screen: RegisterScreen,
   },
   Login: {
     screen: LoginScreen,
   },
+  RevenueForm: {
+    screen: RevenueFormScreen
+  },
+  AddExpense: {
+    screen: AddExpenseScreen
+  }
 });
 
 const AppContainer = createAppContainer(AppNavigator);
-
 export default AppContainer;
